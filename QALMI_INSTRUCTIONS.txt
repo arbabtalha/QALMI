@@ -1,0 +1,555 @@
+QALMI
+OFFLINE-FIRST DOCUMENT STUDIO
+DIRECTAI MASTER BUILD SPECIFICATION
+150 FUNCTIONAL FEATURES + DESIGN + GITHUB REPOSITORY WORKFLOW
+
+====================================================================
+01 | BUILD DIRECTIVE
+====================================================================
+
+Build Qalmi as a real, production-oriented web application for creating, editing, reviewing, printing, importing, exporting, and collaborating on documents. It must work online and offline; this is not a static mockup, clickable prototype, or collection of decorative controls.
+
+Use the working product name “Qalmi”. Create an original identity inspired by familiar word-processing workflows. Do not use Microsoft Word branding, logos, proprietary assets, or a pixel-for-pixel copy of its interface. Check name, domain, and trademark availability before public launch.
+
+Before coding, inspect the connected project, framework, existing features, and repository instructions. Preserve the existing stack and working functionality unless I explicitly authorize a change. If this is a new project, use the architecture in Section 04.
+
+No control may be shown as functional unless it works. Do not use fake save states, sample-only collaboration, dead buttons, placeholder handlers, or mock data presented as real user data. Maintain a feature ledger and mark an item complete only after its acceptance test passes.
+
+====================================================================
+02 | OPTIONAL SINGLE-REPOSITORY COPY INPUT
+====================================================================
+
+Use this block only when I ask you to mirror/copy one source repository. I will process repositories in separate chats, one repository per chat.
+
+SOURCE GITHUB REPOSITORY URL — PASTE EXACTLY ONE LINK:
+[PASTE_ONE_GITHUB_REPOSITORY_URL_HERE]
+
+BRANCH OR COMMIT — OPTIONAL:
+[LEAVE BLANK TO USE THE DEFAULT BRANCH]
+
+COPY RULES:
+- Work only from the URL above. If it is blank, invalid, or inaccessible, ask me; never guess or substitute a repository.
+- Copy the complete available repository into a separate folder named `repo-copies/<repository-name>/`.
+- Preserve the original folder tree, filenames, file contents, hidden files, skills, prompts, instructions, tests, examples, assets, workflows, configuration, license, and notices. Include files such as `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and `README.md` wherever present.
+- Do not translate, summarize, rename, reformat, merge, or silently skip repository files. Do not overwrite an existing destination.
+- Preserve Git history, submodules, and Git LFS objects when accessible. State clearly if the result is a snapshot rather than a full clone.
+- Do not run source scripts or install its dependencies during a copy-only task. Do not paste the entire repository into chat.
+- Verify source and destination inventories and checksums where possible. Add `COPY_MANIFEST.md` with the source URL, branch/commit, file count, verification result, and any inaccessible or excluded items.
+- Keep each repository copy separate. Do not merge copied repositories into Qalmi or into each other unless I explicitly request integration.
+
+====================================================================
+03 | GITHUB RESOURCE MAP — USE EACH REPOSITORY FOR ITS ACTUAL JOB
+====================================================================
+
+A. DESIGN-TIME GUIDANCE — NOT PRODUCTION DEPENDENCIES
+
+1. UI/UX Pro Max — primary app-specific design-system guidance
+https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+Use it to derive product-appropriate app layout, typography, colors, spacing, responsive behavior, accessibility, and component patterns. Ask for a word-processing/document-editor interface, not a generic SaaS landing page. Apply its guidance to the current stack. It is an AI design resource, not a library that belongs in the deployed app.
+
+2. Awesome Claude Design — select one `DESIGN.md` reference
+https://github.com/VoltAgent/awesome-claude-design
+Collection: https://getdesign.md/
+Choose one relevant design system and treat it as a visual reference for tokens, component rules, and responsive behavior. For a document workspace, Notion’s public-pattern analysis may be used as inspiration only: https://getdesign.md/notion/design-md. Create Qalmi’s own brand; do not copy Notion’s identity.
+
+3. Taste Skill — select the matching sub-skill
+https://github.com/Leonxlnx/taste-skill
+For new product/app screens, use `minimalist-ui`. For improving an existing app, use `redesign-existing-projects` and make targeted improvements without breaking features. Use `design-taste-frontend` only for public marketing/landing pages, not as the main guide for the editor or dashboard.
+
+4. DESIGN.md Chrome Extension — only when I provide a reference website
+https://github.com/bergside/design-md-chrome
+Chrome Web Store: https://chromewebstore.google.com/detail/designmd-style-extractor/ogpdnchdjiibhobphelbbkemnnemkfma
+Use it to extract a reference site’s design signals into a `DESIGN.md` or `SKILL.md`, then adapt the rules. Do not copy the site’s identity wholesale.
+
+5. Motion — no separate repository
+Use relevant motion guidance from UI/UX Pro Max or Taste Skill. Keep editor animation subtle, useful, fast, and compatible with `prefers-reduced-motion`.
+
+Design source article: https://noocap.notion.site/5-Free-Repos-That-Give-Claude-Real-Design-Skills-Every-Link-3dd508e99dda81ebade8ed0f108c895f
+
+B. RUNTIME / ENGINEERING REPOSITORIES — INTEGRATE ONLY WHAT THE APP NEEDS
+
+1. Tiptap — rich-text editing framework based on ProseMirror
+https://github.com/ueberdosis/tiptap
+Use as the editor engine and extension framework. Build Qalmi’s own toolbar, ribbon, page workspace, commands, and states. Do not assume the editor framework supplies a complete Word-like application.
+
+2. Yjs — shared document state and collaborative editing primitives
+https://github.com/yjs/yjs
+Use for conflict-safe concurrent document edits and collaborative state when real collaboration is implemented. Keep the document schema and migration rules explicit.
+
+3. y-indexeddb — persist Yjs document data locally
+https://github.com/yjs/y-indexeddb
+Use with Yjs so edits can load and persist in the browser while offline. Verify persistence after reload and browser restart.
+
+4. Hocuspocus — online collaboration server for Yjs
+https://github.com/ueberdosis/hocuspocus
+Use for authenticated WebSocket collaboration and persistent server synchronization. Configure real document authorization and storage; do not ship the demo endpoint as production infrastructure.
+
+5. Dexie.js — local IndexedDB data layer
+https://github.com/dexie/Dexie.js
+Use for document-library metadata, settings, local indexes, and other structured local records. Keep the canonical collaborative document state in one clearly defined place; avoid needless duplicate copies of document content.
+
+6. Vite PWA — service-worker and installable-app support, if using Vite
+https://github.com/vite-pwa/vite-plugin-pwa
+Use to cache the application shell and support a tested installable PWA. Offline startup is available only after the app shell has been cached; communicate this accurately.
+
+7. Mammoth.js — DOCX import adapter
+https://github.com/mwilliamson/mammoth.js
+Use to convert uploaded `.docx` files into clean HTML for schema mapping. Validate imported content and show conversion warnings; do not claim perfect Word-format fidelity.
+
+8. docx — DOCX generation/export adapter
+https://github.com/dolanmiu/docx
+Use to generate real `.docx` files from Qalmi’s document model. Test styles, lists, tables, images, headers/footers, and page breaks in actual office readers.
+
+REPOSITORY RULES:
+- Check each project’s current README, license, security posture, compatibility, and version before integration. Pin compatible versions and run the relevant tests.
+- Do not clone every repository into the production source tree. Use supported packages/APIs for implementation; use the copy block in Section 02 only when I explicitly request a repository mirror.
+- Do not claim a GitHub resource was read, installed, or used unless it was actually accessible and used.
+- DirectAI must not assume that Claude-specific plugins work in DirectAI. Read and apply compatible repository guidance; ask before installing tools or changing the environment.
+
+====================================================================
+04 | RECOMMENDED IMPLEMENTATION ARCHITECTURE
+====================================================================
+
+If a codebase already exists, keep its framework and adapt this architecture. For a new build, use a maintainable TypeScript web stack, such as React + Vite, with:
+
+- Tiptap/ProseMirror for the editor and a versioned document schema.
+- Yjs plus y-indexeddb for local-first document persistence and offline edits.
+- Hocuspocus plus an authenticated provider and persistent database for real online collaboration.
+- Dexie for library metadata, settings, and local indexes where useful.
+- A service worker/PWA layer for cached application files and offline startup after first successful load.
+- A backend for accounts, document metadata, permissions, invitations, version history, audit events, and durable collaborative state.
+- DOCX import/export adapters using Mammoth.js and `docx`, with explicit conversion warnings and round-trip tests.
+
+Keep the editor’s document model canonical and versioned. Use safe, deterministic migrations. Do not silently discard unsupported content during import, sync, or export. For PDF, implement a real print/export path and validate page breaks and output; do not label a browser print dialog as a completed direct-download feature.
+
+====================================================================
+05 | ONLINE / OFFLINE CONTRACT
+====================================================================
+
+OFFLINE MUST WORK:
+- After the app has been loaded and the user has previously authenticated on that device, the cached app shell and previously available documents must open without a network connection.
+- Users must be able to create, open, edit, format, search, import, and export supported local documents offline.
+- Persist each edit locally before showing it as saved. Distinguish “Saved on this device” from “Synced to cloud”.
+- Queue document edits, comments, and supported metadata changes safely. Show pending, syncing, synced, and failed states per document.
+- Reconnect automatically, retry safely, and avoid duplicated or lost edits. Use Yjs for concurrent document content rather than last-write-wins replacement.
+- Warn about storage limits, persistence denial, and recovery/backup needs. Provide local export even when the server is unavailable.
+
+ONLINE MUST WORK:
+- Real sign-in, server-side access checks, invitations, share permissions, live co-editing, collaborator presence, cloud storage, and cross-device history must use a functioning backend.
+- Live collaboration must be verified with at least two separate authenticated browser sessions.
+- Handle expired sessions, revoked permissions, rejected updates, network drops, and server failures visibly and safely.
+
+Do not promise first-run offline sign-in, instant cross-device sync without a server, or unlimited browser storage. Never rely only on `navigator.onLine`; test actual requests and collaboration socket state.
+
+====================================================================
+06 | REQUIRED FUNCTIONAL FEATURE SET — 150 ITEMS
+====================================================================
+
+A. DOCUMENTS & WORKSPACE — LOCAL-FIRST, CLOUD-SYNCED WHEN ONLINE
+
+001. Create a blank document.
+002. Create a document from a built-in template.
+003. Open a cloud document that the user is authorized to access.
+004. Open a local document from the device.
+005. Rename a document and persist the change.
+006. Create folders.
+007. Create nested folders.
+008. Move documents between folders.
+009. Duplicate a document with a new identity.
+010. Favorite and unfavorite documents.
+011. Archive and restore documents.
+012. Move documents to trash and restore them.
+013. Show recently opened documents.
+014. Search document titles and available document text.
+015. Tag, filter, and sort the document library.
+016. Show live word count, character count, owner, and last-edited time.
+
+B. EDITING & TEXT FORMATTING — WORK OFFLINE AND SYNC LATER
+
+017. Edit structured rich text with paragraphs and inline marks.
+018. Choose a font family from the supported font list.
+019. Change font size.
+020. Apply bold.
+021. Apply italic.
+022. Apply underline.
+023. Apply strikethrough.
+024. Change text color.
+025. Apply text highlighting.
+026. Clear direct formatting.
+027. Apply named paragraph styles, including body text, title, and headings.
+028. Align paragraphs left, center, right, and justify.
+029. Set line spacing.
+030. Set paragraph spacing.
+031. Increase and decrease paragraph indentation.
+032. Create bulleted lists.
+033. Create numbered lists.
+034. Create and edit multilevel lists.
+035. Create task checklists.
+036. Apply block quotes.
+037. Apply superscript.
+038. Apply subscript.
+039. Insert hyperlinks.
+040. Edit, validate, and remove hyperlinks.
+041. Insert inline code and code blocks.
+042. Undo recent changes.
+043. Redo undone changes.
+044. Provide discoverable keyboard shortcuts.
+045. Cut, copy, and paste selected content.
+046. Paste while retaining supported source formatting.
+047. Paste as plain text.
+048. Find and replace text within a document.
+
+C. PAGE LAYOUT & INSERTION — WORK OFFLINE AND SYNC LATER
+
+049. Set page size from supported presets.
+050. Set page margins.
+051. Set portrait or landscape orientation.
+052. Insert and remove page breaks and section breaks.
+053. Edit repeating headers.
+054. Edit repeating footers.
+055. Insert page numbers with supported placement and formats.
+056. Set document columns where supported.
+057. Use a visible ruler and configurable tab stops.
+058. Switch between continuous editing and paginated/print layout.
+059. Navigate headings in a document outline pane.
+060. Generate and refresh a table of contents from heading styles.
+061. Insert tables.
+062. Add and delete table rows and columns.
+063. Merge and split table cells.
+064. Align content within table cells.
+065. Set table borders and cell shading.
+066. Insert local images.
+067. Resize and crop images.
+068. Set image alignment and supported text wrapping.
+069. Add and edit image alternative text.
+070. Insert and edit basic shapes and lines.
+071. Insert symbols and special characters.
+072. Insert and edit basic equations.
+
+D. REFERENCES, COMMENTS & REVIEW — LOCAL CHANGES QUEUE FOR SYNC
+
+073. Insert footnotes.
+074. Insert endnotes.
+075. Attach a comment to selected text or a document anchor.
+076. Reply to a comment thread.
+077. Resolve and reopen comment threads.
+078. Track inserted and deleted text as changes.
+079. Accept or reject an individual change.
+080. Accept or reject all changes in scope.
+081. Switch between editing and suggestion/review mode.
+082. Identify reviewers with names and consistent colors.
+083. Show, hide, and filter review markup.
+084. Compare two document versions.
+085. Restore a prior version without silently erasing newer content.
+086. Insert citations using supported citation fields.
+087. Maintain citation sources for a document.
+088. Generate and refresh a bibliography from recorded sources.
+089. Insert and update cross-references.
+090. Create and navigate named bookmarks.
+091. Show version/activity history with author and timestamp where available.
+
+E. IMPORT, EXPORT & PRINT — LOCAL FILE OPERATIONS MUST WORK OFFLINE
+
+092. Import `.docx` files and map supported content into the editor schema.
+093. Export a real `.docx` file from the editor model.
+094. Import and export plain-text `.txt` files.
+095. Import and export HTML with safe sanitization.
+096. Import and export RTF only when the conversion path is tested.
+097. Import and export ODT only when the conversion path is tested.
+098. Produce a real PDF output or a clearly labeled print-to-PDF workflow.
+099. Provide print preview using print-specific layout rules.
+100. Print selected pages or a supported page range.
+101. Open local files through a file picker.
+102. Open supported files by drag and drop.
+103. Insert images from supported clipboard data.
+104. Export selected text or supported selected content.
+105. Report unsupported or altered content during file conversion; never silently claim full fidelity.
+
+F. ONLINE ACCOUNTS & COLLABORATION — REAL BACKEND REQUIRED
+
+106. Authenticate users securely.
+107. Show a cloud document library for the signed-in user.
+108. Share documents with users or controlled links.
+109. Enforce owner, editor, commenter, and viewer roles.
+110. Invite collaborators; set, expire, and revoke access.
+111. Co-edit one document in real time across authenticated sessions.
+112. Show collaborator cursors and selections where supported.
+113. Show who is present in the document.
+114. Synchronize comments and tracked changes between authorized users.
+115. Support mentions and useful notifications where configured.
+116. Confirm server persistence separately from local save status.
+117. Show shared version history across devices.
+118. Record relevant document activity with author and time.
+119. Search and filter cloud documents subject to permissions.
+
+G. OFFLINE, SYNC & DATA RECOVERY — MUST BE TESTED, NOT SIMULATED
+
+120. Install Qalmi as a PWA on supported browsers.
+121. Cache the application shell for offline startup after first successful load.
+122. Create, open, and edit available documents offline after initial authentication.
+123. Persist edits locally in IndexedDB and survive reload/browser restart.
+124. Show distinct local-save and cloud-sync status.
+125. Search the locally available document library offline.
+126. Queue supported edits and comments while offline.
+127. Resume synchronization automatically when connectivity returns.
+128. Retry failed synchronization with bounded backoff and visible errors.
+129. Merge concurrent document edits safely with Yjs.
+130. Show sync status and last successful sync per document.
+131. Import and export supported local files without a server connection.
+132. Recover unsaved local work after a crash or refresh.
+133. Detect storage quota limits and warn before data loss.
+134. Migrate local database schemas without losing user documents.
+135. Back up and restore locally available data through a user-controlled export.
+136. Surface metadata conflicts, revoked access, and rejected server updates without discarding local work.
+
+H. ACCESSIBILITY, SECURITY & PREFERENCES
+
+137. Support keyboard-only navigation through app controls and editor commands.
+138. Show a visible focus indicator on every interactive control.
+139. Provide semantic structure and accessible names for screen readers.
+140. Maintain readable contrast and scalable text.
+141. Reflow the interface at zoomed and narrow viewport sizes.
+142. Provide usable touch targets and mobile editing controls.
+143. Support right-to-left paragraphs and mixed bidirectional text.
+144. Provide document language and locale settings.
+145. Provide light and dark themes with consistent contrast.
+146. Respect reduced-motion preferences.
+147. Provide spelling support through browser or configured dictionaries, with offline behavior stated accurately.
+148. Enforce authentication and document permissions on the server, not only in the UI.
+149. Sanitize imported/pasted HTML and validate links to prevent script injection and unsafe content.
+150. Let users export their data and request account/document deletion through a clear, verified flow.
+
+====================================================================
+07 | BESPOKE VISUAL DIRECTION — “INK & CANVAS”
+====================================================================
+
+Create a calm, precise workspace called “Ink & Canvas”: warm paper document surfaces, deep-ink navigation, one restrained teal accent, crisp borders, high legibility, and disciplined spacing. Keep the editor canvas visually dominant and the tools compact but easy to reach. Use clear visual hierarchy for ribbon/tabs, document outline, page workspace, status bar, comments, and sharing.
+
+Design for desktop productivity first, then adapt deliberately to tablet and mobile. On small screens, collapse the ribbon into contextual tool groups without hiding core editing. Use motion only for state feedback; avoid decorative gradients, excessive glass/blur, card-heavy dashboards, and generic AI layouts. Keep the brand and iconography original.
+
+Apply the workflow below:
+1. Inspect the app and requirements before changing files.
+2. Use UI/UX Pro Max for product-specific design decisions.
+3. Select one compatible `DESIGN.md` from Awesome Claude Design as a reference; do not mix incompatible systems.
+4. Use Taste Skill’s `minimalist-ui` for new app surfaces or `redesign-existing-projects` for an existing app. Do not apply the landing-page default to editor screens.
+5. Use the Chrome extension only if I provide a reference site.
+6. Implement the agreed system in the existing stack and verify real interactions, states, and responsive layouts.
+
+====================================================================
+08 | DELIVERY PHASES & ACCEPTANCE GATES
+====================================================================
+
+PHASE 1 — FOUNDATION
+Inspect the repository, preserve its stack, define the document schema, build the workspace shell, and implement the feature ledger. Establish design tokens and accessible components.
+
+PHASE 2 — LOCAL EDITOR
+Implement the editor, formatting, tables, images, layout essentials, local document library, autosave, import/export foundations, and offline persistence. Prove that a document survives reload and browser restart with the network disabled.
+
+PHASE 3 — DOCUMENT OPERATIONS
+Complete page setup, review tools, citations/references, printing, DOCX conversion paths, and recovery/export safeguards. Test real files; record fidelity limits.
+
+PHASE 4 — ONLINE SYNC & COLLABORATION
+Implement authentication, permissions, durable server storage, Hocuspocus/Yjs collaboration, invitations, presence, comments, history, reconnect behavior, and conflict/rejection handling. Test with at least two independent users/sessions.
+
+PHASE 5 — HARDENING
+Complete accessibility, security checks, responsive QA, browser storage warnings, service-worker update behavior, performance work, and regression testing.
+
+REQUIRED ACCEPTANCE TESTS
+- Create a document online, type and format content, and confirm local save before cloud sync.
+- Disable the network; reload the cached app; open, edit, search, and export the local document.
+- Close and reopen the browser; confirm offline edits remain.
+- Restore the network; confirm queued edits synchronize once, with clear status and no lost/duplicated content.
+- Open the same document in two authenticated browser sessions; verify live edits, cursors/presence, comments, and permissions.
+- Test revoked/expired access, server outage, failed sync, storage quota warning, import conversion warnings, DOCX export, and print/PDF output.
+- Run automated unit/integration tests and browser end-to-end tests, including offline and reconnect scenarios.
+- Check desktop, tablet, and mobile layouts; keyboard operation, focus, screen-reader labels, contrast, RTL text, and reduced motion.
+
+FINAL REPORT
+Return the running application and a concise checklist for features 001–150 with status: WORKING, BLOCKED, or NOT IMPLEMENTED. Link each blocked or incomplete item to its exact limitation. Include test commands/results, required environment variables, and deployment steps. Never mark a feature WORKING unless its behavior has been tested. Do not describe the app as complete while any required feature is only a mockup or placeholder.
+
+
+====================================================================
+09 | ADDITIONAL FEATURE GAP ADDENDUM — FROM INKLEAF_FEATURES.TXT
+====================================================================
+
+Keep the original Qalmi specification above unchanged. Add these missing capabilities and detailed refinements to the feature ledger. Features 151–225 supplement the original 001–150 list; items 226–235 are a future roadmap. Test each feature before marking it WORKING.
+
+151. Provide a tab bar for multiple open documents; switch tabs without losing edits.
+152. Autosave locally and show an honest “saved on this device” state.
+153. Keep crash-guard snapshots and restore work after an unexpected close.
+154. Maintain five rolling safety copies per document and allow restoring any copy.
+155. Provide a storage manager with per-document sizes and a browser-storage estimate meter.
+156. Warn about exact duplicate documents using a content hash; never delete automatically.
+157. Support permanent deletion and “empty trash” with explicit confirmation.
+158. Show document properties including title, author, creation date, and edit date.
+159. Calculate estimated reading time as well as word and character counts.
+160. Offer safe smart-paste modes for plain text, supported formatting, and validated Markdown-style links.
+161. After a long paste, keep the insertion point and pasted content in view.
+162. Support configurable paired-character typing and common Markdown shortcuts such as headings, lists, and quotes.
+163. Show every find/replace match, navigate between matches, and report match counts.
+164. Provide a format painter with one-time apply and locked/repeated apply modes.
+165. Change selected text to lowercase, UPPERCASE, Title Case, or Sentence case.
+166. Insert either an auto-updating date/time field or a fixed date/time snapshot.
+167. Let users create and manage a personal spelling dictionary.
+168. Offer basic proofing checks for double spaces, repeated words, and overly long sentences.
+169. Show real font previews and recent fonts; include Urdu-capable fonts when available.
+170. Keep recent text and highlight colors available from their color menus.
+171. Provide exact font-size entry from 8–96 pt and one-step increase/decrease controls.
+172. Support small caps.
+173. Support letter spacing.
+174. Support drop caps.
+175. Provide named paragraph styles for Normal, Title, Subtitle, Heading 1–6, Quote, Code, and Caption.
+176. Let users create, update-to-match, and reset custom paragraph styles.
+177. Provide coherent style sets such as formal, academic, letter, and modern.
+178. Support a next-style rule, such as starting Normal text after Enter at the end of a heading.
+179. Allow sections under headings to collapse and expand.
+180. Automatically number heading levels (1, 1.1, 1.1.1) and preserve numbering in print output.
+181. Provide list numbering styles including Arabic numerals, letters, Roman numerals, Urdu-Indic numerals, and selectable bullet glyphs.
+182. Sort selected lists or text A–Z and Z–A without corrupting paragraph formatting.
+183. Convert selected text or a whole document between Urdu-Indic digits (۰–۹) and Western digits (0–9).
+184. Support keyboard Tab navigation through table cells, with predictable row creation and structural editing.
+185. Auto-number and renumber footnotes after edits; provide navigation from reference to note and back.
+186. Store inserted images as embedded document assets for offline use; export them to DOCX when validated, otherwise warn clearly before export.
+187. Add horizontal rules and clearly defined page-break and section-break types.
+188. Support a different first-page header/footer and configurable header/footer positions.
+189. Configure watermark text, size, angle, and opacity; verify it prints on every intended page.
+190. Support custom page dimensions with explicit mm, cm, and inch units.
+191. Provide margin presets and exact custom margins with units and print-area feedback.
+192. Allow per-document page color and a small set of accessible paper tints.
+193. Support one-to-three columns and an optional divider line.
+194. Support mirrored book margins and a configurable binding gutter.
+195. Offer language-aware hyphenation only for languages with a configured dictionary.
+196. Implement widow/orphan control and “keep heading with next paragraph” in paged output.
+197. Provide genuinely measured page sheets and live re-pagination when content or layout changes.
+198. Display line numbers based on the rendered page layout, not approximate character counts.
+199. Provide a print preview with page scaling that matches the sheets sent to print.
+200. Ensure system printing prints the document only, never the app toolbar or surrounding interface.
+201. Provide a booklet-print guide with paired 2-up pages and blank-page padding; do not claim this replaces printer-driver imposition.
+202. Add a clean reading mode that hides editing chrome.
+203. Add focus mode that dims surrounding content while the current paragraph is edited.
+204. Add typewriter mode that keeps the active line vertically centered.
+205. Provide read-aloud controls (start, pause/resume, stop); claim Urdu speech only when the device actually supports it.
+206. Provide a measurement ruler showing page margins, zones, and tab stops.
+207. Persist zoom independently for each document/layout where practical.
+208. Provide a true full-screen toggle with a visible exit path.
+209. Define a versioned, validated native `.qalm` document format with clear asset-handling rules.
+210. Export a self-contained styled HTML file with required styles and supported embedded assets.
+211. Verify reliable downloads on mobile browsers, including Firefox for Android and `content://` handoffs.
+212. Report import/export fidelity, unsupported elements, and any content changes; never silently drop content.
+213. Detect missing browser capabilities required by the selected DOCX parser (including `DecompressionStream` when required) and provide a tested fallback or clear warning.
+214. Provide a separately tested portable single-file offline edition with no external script/font fetches; document browser `file://` storage limitations and do not confuse it with the installable PWA.
+215. Add a fuzzy command palette on Ctrl+K that searches every available editor command.
+216. Show a complete in-app keyboard-shortcut reference.
+217. Support F4 to repeat the last safe, repeatable action.
+218. Provide suitable right-click and mobile long-press context menus for document and structural editing actions.
+219. Persist sidebar collapsed/expanded state by viewport or window size.
+220. Provide line-spacing presets including 1, 1.15, 1.5, 2, and 2.5, where supported.
+221. Set paragraph spacing before and after in exact points.
+222. Provide explicit first-line, hanging, left, and right indent controls.
+223. Set language and text direction per paragraph, with an optional auto-detect mode.
+224. Preserve document-defined colors when switching app themes; theme changes must not recolor document content.
+225. Restore each document’s last cursor, selection, and scroll position when reopening or switching back to it.
+
+FUTURE ROADMAP — IMPLEMENT ONLY AFTER THE CORE EDITOR IS STABLE
+
+226. Add user-configurable AutoCorrect rules and exceptions.
+227. Add mail merge from CSV with field mapping, preview, and batch document generation.
+228. Add voice typing where browser/device speech recognition is available; show permission and online/offline limitations.
+229. Add OCR for scanned pages and images with clear local-versus-server processing and privacy controls.
+230. Add an accessibility checker for heading order, image alt text, table headers, and document structure.
+231. Let users create, edit, import, export, and share their own templates.
+232. Add citation-style presets such as APA, MLA, Chicago, and IEEE, with bibliography refresh.
+233. Compare and merge two separate documents while retaining a reviewable source and change history.
+234. Generate and update tables of figures and document indexes.
+235. Add opt-in grammar/writing assistance; disclose network use and never transmit document text without explicit consent.
+
+====================================================================
+10 | VERBATIM USER-PROVIDED WEB APP DESIGN INSTRUCTIONS
+====================================================================
+
+WEB APP DESIGN INSTRUCTIONS  
+  
+Build a bespoke, production-ready web app. Follow these instructions in order.  
+1. Inspect Before Changing  
+  
+    Inspect the existing codebase, framework, design patterns, user flows, and requested features before writing code.  
+    Preserve working functionality and the current stack. Do not rewrite the app from scratch unless explicitly asked.  
+    Create an original visual identity for this product. Use references for guidance, not for cloning.  
+    Keep design tools and skill files out of production dependencies and the shipped bundle.  
+  
+2. Establish the Product UI System — UI/UX Pro Max  
+  
+Repository: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill  
+  
+Use UI/UX Pro Max first to define app-specific layout, color roles, typography, spacing, component patterns, responsive behavior, and accessibility rules. Base decisions on the actual product and audience—for example, request a document-editor/workspace system for a word processor, not a generic SaaS landing page. Apply the guidance to the project's existing stack and validate that it fits the product.  
+  
+For Claude Code, use the repository's current plugin commands if the skill is not already available:  
+  
+text  
+  
+/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill  
+/plugin install ui-ux-pro-max@ui-ux-pro-max-skill  
+  
+Use the current CLI package only if the CLI workflow is needed: https://www.npmjs.com/package/ui-ux-pro-max-cli. Do not use the outdated uipro-cli package.  
+3. Select One Design Reference — Awesome Claude Design  
+  
+Repository: https://github.com/VoltAgent/awesome-claude-design  
+DESIGN.md collection: https://getdesign.md/  
+  
+Choose one DESIGN.md that best matches the product. Use it as the source of truth for visual tokens, component styling, layout, and responsive rules. Do not combine conflicting design systems.  
+  
+For a document editor, Notion's workspace guidance may inform calm document surfaces and hierarchy; adapt it into a distinct product identity. Do not reproduce Notion's branding, logo, or proprietary assets. The Notion reference is at https://getdesign.md/notion/design-md. If needed, add it from the project root with:  
+  
+Bash  
+  
+npx getdesign@latest add notion  
+  
+4. Choose the Correct Taste Skill  
+  
+Repository: https://github.com/Leonxlnx/taste-skill  
+  
+Select only the skill that matches the task:  
+  
+    New product/app screens: use minimalist-ui for restrained, structured product UI.  
+    Improving an existing app: use redesign-existing-projects; audit the current interface first, then make targeted improvements without breaking functionality.  
+    Public marketing or landing pages: use design-taste-frontend only for that public-facing work. Do not use its default workflow as the primary guide for dashboards, editors, or app screens.  
+  
+Install only the matching skill when needed:  
+  
+Bash  
+  
+npx skills add https://github.com/Leonxlnx/taste-skill --skill "minimalist-ui"  
+  
+For an existing app redesign, use:  
+  
+Bash  
+  
+npx skills add https://github.com/Leonxlnx/taste-skill --skill "redesign-existing-projects"  
+  
+5. Use Motion Selectively  
+  
+There is no separate motion-presets repository in the article. Use motion guidance from UI/UX Pro Max and, where appropriate, Taste Skill. Animate meaningful interactions only; keep transitions subtle and performant. Respect prefers-reduced-motion and avoid continuous or decorative animation that distracts from the work.  
+6. Extract a Reference Site Only When Supplied  
+  
+Chrome extension repository: https://github.com/bergside/design-md-chrome  
+Chrome Web Store: https://chromewebstore.google.com/detail/designmd-style-extractor/ogpdnchdjiibhobphelbbkemnnemkfma  
+  
+Use this extension only when the user provides a reference website. Extract its design signals into DESIGN.md or SKILL.md, then adapt those rules to this product. Do not copy the reference site's identity wholesale.  
+7. Implement and Verify  
+  
+    Implement the agreed system in the existing framework; keep all requested features functional.  
+    Verify layouts at mobile, tablet, and desktop widths; fix overflow and broken navigation.  
+    Implement clear loading, empty, error, success, disabled, hover, focus, and active states where relevant.  
+    Check keyboard operation, visible focus, accessible names, readable contrast, touch targets, and reduced-motion behavior.  
+    Avoid generic AI patterns: arbitrary gradients, excessive blur, decorative cards without purpose, and inconsistent spacing or radii.  
+    Before finishing, report which resources were actually used and which checks were completed. Do not claim a tool or repository was used unless it was.  
+  
+Source Links  
+  
+    Original short link: https://tinyurl.com/y7m52a5y  
+    Resolved article: https://noocap.notion.site/5-Free-Repos-That-Give-Claude-Real-Design-Skills-Every-Link-3dd508e99dda81ebade8ed0f108c895f  
+    Claude Design: https://claude.ai/design  
+    DESIGN.md guide: https://getdesign.md/what-is-design-md  
+    Article references to DESIGN.md and SKILL.md: http://design.md/ and http://skill.md/ — treat these as Markdown file types, not as additional repositories.  
+  
+The article presents five resources/categories but only four standalone GitHub repositories. Motion is a capability within the other resources, not a fifth repository
